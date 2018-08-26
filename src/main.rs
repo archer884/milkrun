@@ -9,7 +9,7 @@ const KERBIN_RADIUS: f64 = 600_000.0; // meters
 struct Orbit {
     ap: f64,
     pe: f64,
-    period: f64, // Is this field important?
+    period: f64,
     body_radius: f64,
 }
 
