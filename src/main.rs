@@ -43,7 +43,7 @@ impl Orbit {
             return None;
         }
 
-        let desired_pe = self.pe - (semimajor_axis - desired_semimajor_axis);
+        let desired_pe = self.pe - (semimajor_axis * 2.0 - desired_semimajor_axis * 2.0);
         if desired_pe > 0.0 {
             Some(desired_pe)
         } else {
@@ -61,9 +61,8 @@ fn main() {
         6.0,                        // Time in hours
     );
 
-    let resonant_periapsis = orbit.resonant_periapsis(1.0 / 3.0).expect("Fuck!");
-    let four_hour_periapsis = orbit.resonant_periapsis(2.0 / 3.0).expect("Shit!");
-    
-    println!("{:02} meters", resonant_periapsis);
-    println!("{:02} meters", four_hour_periapsis);
+    match orbit.resonant_periapsis(2.0 / 3.0) {
+        None => println!("Impossible"),
+        Some(pe) => println!("{:0.2}", pe),
+    }
 }
