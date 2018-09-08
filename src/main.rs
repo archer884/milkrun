@@ -1,5 +1,8 @@
 // FIXME: Allow named altitudes like "geostationary"
-// FIXME: Print delta v requirements, if possible?
+// FIXME: Print delta v requirements, if possible? (may require data I'm not getting right now)
+// FIXME: make this work for inverted ratios--3:2 as well as 2:3
+// FIXME: abstract out the parsing code instead of just repeating it for both altitude and ratio
+// FIXME: switch to structopt instead of clap? (interface is really simple, after all)
 
 #[macro_use]
 extern crate clap;
@@ -142,7 +145,7 @@ impl FromStr for Altitude {
 
         let mut parts = s.trim().split('x');
 
-        // FIXME: this ignores additional ratio segments.
+        // FIXME: this ignores additional altitude segments.
         Ok(Altitude {
             ap: parts.next().ok_or(ParseAltitudeError::MissingSegment)?.parse()?,
             pe: parts.next().ok_or(ParseAltitudeError::MissingSegment)?.parse()?,
@@ -231,9 +234,6 @@ fn main() {
     //     None => println!("Impossible"),
     //     Some(pe) => println!("{:0.2}", pe),
     // }
-
-    // This program works well and all, but I hate the command line setup I've got. Writing
-    // all the -a -p -b shit is a little bit annoying.
 
     match Command::from_args().build() {
         Err(e) => println!("{:?}", e),
