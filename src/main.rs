@@ -1,3 +1,6 @@
+// FIXME: Allow named altitudes like "geostationary"
+// FIXME: Print delta v requirements, if possible?
+
 #[macro_use]
 extern crate clap;
 
