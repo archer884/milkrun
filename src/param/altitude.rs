@@ -1,7 +1,7 @@
 use super::ParseTwoPartFloatError;
-use std::str::FromStr;
-use std::fmt::{self, Display};
 use std::error::Error;
+use std::fmt::{self, Display};
+use std::str::FromStr;
 
 #[derive(Debug)]
 pub struct Altitude {

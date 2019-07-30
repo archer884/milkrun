@@ -4,19 +4,21 @@ mod ratio;
 
 pub use altitude::{Altitude, ParseAltitudeError};
 pub use orbit::Orbit;
-pub use ratio::{Ratio, ParseRatioError};
+pub use ratio::{ParseRatioError, Ratio};
 
-use std::num::ParseFloatError;
-use std::fmt::{self, Display};
 use std::error::Error;
+use std::fmt::{self, Display};
+use std::num::ParseFloatError;
 
 pub fn parse_two_part_float(s: &str) -> Result<(f64, f64), ParseTwoPartFloatError> {
     let mut parts = s.split(|u: char| !u.is_ascii_digit());
 
-    let left = parts.next()
+    let left = parts
+        .next()
         .ok_or(ParseTwoPartFloatError::MissingSegment)?
         .parse()?;
-    let right = parts.next()
+    let right = parts
+        .next()
         .ok_or(ParseTwoPartFloatError::MissingSegment)?
         .parse()?;
 
@@ -43,8 +45,12 @@ impl Display for ParseTwoPartFloatError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             ParseTwoPartFloatError::Float(e) => write!(f, "{}", e),
-            ParseTwoPartFloatError::MissingSegment => f.write_str("invalid format (missing segment)"),
-            ParseTwoPartFloatError::TooManyParts => f.write_str("invalid format (too many segments)"),
+            ParseTwoPartFloatError::MissingSegment => {
+                f.write_str("invalid format (missing segment)")
+            }
+            ParseTwoPartFloatError::TooManyParts => {
+                f.write_str("invalid format (too many segments)")
+            }
         }
     }
 }
