@@ -12,7 +12,7 @@ impl FromStr for Altitude {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         const KEOSYNCHRONOUS_ALTITUDE: f64 = 2_863_330.0;
-        
+
         match s.to_lowercase().as_ref() {
             "keosynchronous" | "geosynchronous" | "geostationary" => Ok(Altitude {
                 ap: KEOSYNCHRONOUS_ALTITUDE,

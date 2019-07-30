@@ -46,6 +46,19 @@ impl Orbit {
         }
     }
 
+    // I have no idea if any of this math will work out or not, but the intention here is to
+    // employ this method in the event our desired resonance is > 1.
+    pub fn resonant_apoapsis(&self, resonance: f64) -> Option<f64> {
+        let semimajor_axis = self.semimajor_axis();
+        let relationship = semimajor_axis.powf(3.0) / self.period.powf(2.0);
+
+        let desired_period = self.period * resonance;
+        let desired_semimajor_axis = (relationship * desired_period.powf(2.0)).cbrt();
+
+        let desired_ap = self.ap - (semimajor_axis * 2.0 - desired_semimajor_axis * 2.0);
+        Some(desired_ap)
+    }
+
     fn semimajor_axis(&self) -> f64 {
         (self.ap + self.pe) / 2.0 + self.body_radius
     }

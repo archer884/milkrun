@@ -1,4 +1,7 @@
-use crate::{altitude::Altitude, error::BuildParametersError, orbit::Orbit, ratio::Ratio};
+use crate::{
+    error::BuildParametersError,
+    param::{Altitude, Orbit, Ratio},
+};
 use structopt::StructOpt;
 
 const KERBIN_RADIUS: f64 = 600_000.0; // meters

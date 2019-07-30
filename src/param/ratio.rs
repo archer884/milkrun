@@ -8,6 +8,10 @@ pub struct Ratio {
 }
 
 impl Ratio {
+    pub fn is_greater_than_one(&self) -> bool {
+        self.left > self.right
+    }
+
     pub fn resonance(&self) -> f64 {
         self.left / self.right
     }
