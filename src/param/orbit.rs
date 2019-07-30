@@ -28,10 +28,10 @@ impl Orbit {
     /// semimajor axis could be greater than the current periapsis.
     pub fn resonant_periapsis(&self, resonance: f64) -> Option<f64> {
         let semimajor_axis = self.semimajor_axis();
-        let relationship = semimajor_axis.powf(3.0) / self.period.powf(2.0);
+        let relationship = semimajor_axis.powi(3) / self.period.powi(2);
 
         let desired_period = self.period * resonance;
-        let desired_semimajor_axis = (relationship * desired_period.powf(2.0)).cbrt();
+        let desired_semimajor_axis = (relationship * desired_period.powi(2)).cbrt();
 
         // This math only works if we're making the orbital period shorter.
         if desired_semimajor_axis > semimajor_axis {
@@ -50,7 +50,7 @@ impl Orbit {
     // employ this method in the event our desired resonance is > 1.
     pub fn resonant_apoapsis(&self, resonance: f64) -> Option<f64> {
         let semimajor_axis = self.semimajor_axis();
-        let relationship = semimajor_axis.powf(3.0) / self.period.powf(2.0);
+        let relationship = semimajor_axis.powi(3) / self.period.powi(2);
 
         let desired_period = self.period * resonance;
         let desired_semimajor_axis = (relationship * desired_period.powf(2.0)).cbrt();
