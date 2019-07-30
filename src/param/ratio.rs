@@ -1,5 +1,7 @@
-use crate::error::ParseRatioError;
+use super::ParseTwoPartFloatError;
 use std::str::FromStr;
+use std::fmt::{self, Display};
+use std::error::Error;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Ratio {
@@ -21,18 +23,24 @@ impl FromStr for Ratio {
     type Err = ParseRatioError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut parts = s.trim().split(':');
-
-        // FIXME: this ignores additional ratio segments.
-        Ok(Ratio {
-            left: parts
-                .next()
-                .ok_or(ParseRatioError::MissingSegment)?
-                .parse()?,
-            right: parts
-                .next()
-                .ok_or(ParseRatioError::MissingSegment)?
-                .parse()?,
-        })
+        let (left, right) = super::parse_two_part_float(s)?;
+        Ok(Ratio { left, right })
     }
 }
+
+#[derive(Debug)]
+pub struct ParseRatioError(ParseTwoPartFloatError);
+
+impl From<ParseTwoPartFloatError> for ParseRatioError {
+    fn from(e: ParseTwoPartFloatError) -> Self {
+        ParseRatioError(e)
+    }
+}
+
+impl Display for ParseRatioError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Bad ratio: {}", self.0)
+    }
+}
+
+impl Error for ParseRatioError {}

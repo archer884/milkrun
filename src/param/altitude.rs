@@ -1,5 +1,7 @@
-use crate::error::ParseAltitudeError;
+use super::ParseTwoPartFloatError;
 use std::str::FromStr;
+use std::fmt::{self, Display};
+use std::error::Error;
 
 #[derive(Debug)]
 pub struct Altitude {
@@ -14,7 +16,7 @@ impl FromStr for Altitude {
         const KEOSYNCHRONOUS_ALTITUDE: f64 = 2_863_330.0;
 
         match s.to_lowercase().as_ref() {
-            "keosynchronous" | "geosynchronous" | "geostationary" => Ok(Altitude {
+            "keo" | "keosynchronous" | "geosynchronous" | "geostationary" => Ok(Altitude {
                 ap: KEOSYNCHRONOUS_ALTITUDE,
                 pe: KEOSYNCHRONOUS_ALTITUDE,
             }),
@@ -28,20 +30,26 @@ impl FromStr for Altitude {
                     });
                 }
 
-                let mut parts = s.trim().split('x');
-
-                // FIXME: this ignores additional altitude segments.
-                Ok(Altitude {
-                    ap: parts
-                        .next()
-                        .ok_or(ParseAltitudeError::MissingSegment)?
-                        .parse()?,
-                    pe: parts
-                        .next()
-                        .ok_or(ParseAltitudeError::MissingSegment)?
-                        .parse()?,
-                })
+                let (ap, pe) = super::parse_two_part_float(s)?;
+                Ok(Altitude { ap, pe })
             }
         }
     }
 }
+
+#[derive(Debug)]
+pub struct ParseAltitudeError(ParseTwoPartFloatError);
+
+impl From<ParseTwoPartFloatError> for ParseAltitudeError {
+    fn from(e: ParseTwoPartFloatError) -> Self {
+        ParseAltitudeError(e)
+    }
+}
+
+impl Display for ParseAltitudeError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Bad altitude: {}", self.0)
+    }
+}
+
+impl Error for ParseAltitudeError {}
