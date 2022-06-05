@@ -1,5 +1,4 @@
 // FIXME: Print delta v requirements, if possible? (may require data I'm not getting right now)
-// FIXME: abstract out the parsing code instead of just repeating it for both altitude and ratio
 
 mod command;
 mod error;
@@ -19,8 +18,11 @@ fn main() {
     };
 
     if ratio.is_greater_than_one() {
-        println!("{}", orbit.resonant_apoapsis(ratio.resonance()).unwrap());
+        println!("{:.02}", orbit.resonant_ap(ratio));
     } else {
-        println!("{}", orbit.resonant_periapsis(ratio.resonance()).unwrap());
+        match orbit.resonant_pe(ratio) {
+            Some(pe) => println!("{pe:.02}"),
+            None => eprintln!("resulting orbit is impossible (Pe too low)"),
+        }
     }
 }

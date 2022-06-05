@@ -1,7 +1,10 @@
-use super::ParseTwoPartFloatError;
-use std::error::Error;
-use std::fmt::{self, Display};
-use std::str::FromStr;
+use std::{
+    error::Error,
+    fmt::{self, Display},
+    str::FromStr,
+};
+
+use super::ParseTwoErr;
 
 #[derive(Debug)]
 pub struct Altitude {
@@ -30,7 +33,7 @@ impl FromStr for Altitude {
                     });
                 }
 
-                let (ap, pe) = super::parse_two_part_float(s)?;
+                let (ap, pe) = super::parse_two(s)?;
                 Ok(Altitude { ap, pe })
             }
         }
@@ -38,10 +41,10 @@ impl FromStr for Altitude {
 }
 
 #[derive(Debug)]
-pub struct ParseAltitudeError(ParseTwoPartFloatError);
+pub struct ParseAltitudeError(ParseTwoErr<std::num::ParseFloatError>);
 
-impl From<ParseTwoPartFloatError> for ParseAltitudeError {
-    fn from(e: ParseTwoPartFloatError) -> Self {
+impl From<ParseTwoErr<std::num::ParseFloatError>> for ParseAltitudeError {
+    fn from(e: ParseTwoErr<std::num::ParseFloatError>) -> Self {
         ParseAltitudeError(e)
     }
 }

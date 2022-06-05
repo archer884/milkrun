@@ -1,21 +1,32 @@
-use super::ParseTwoPartFloatError;
-use std::error::Error;
-use std::fmt::{self, Display};
-use std::str::FromStr;
+use std::{
+    error::Error,
+    fmt::{self, Display},
+    str::FromStr,
+};
 
-#[derive(Copy, Clone, Debug)]
+use super::ParseTwoErr;
+
+#[derive(Clone, Copy, Debug)]
 pub struct Ratio {
-    left: f64,
-    right: f64,
+    pub numer: i32,
+    pub denom: i32,
 }
 
 impl Ratio {
-    pub fn is_greater_than_one(&self) -> bool {
-        self.left > self.right
+    pub fn new(numer: i32, denom: i32) -> Self {
+        Self { numer, denom }
     }
 
-    pub fn resonance(&self) -> f64 {
-        self.left / self.right
+    pub fn is_greater_than_one(&self) -> bool {
+        self.numer > self.denom
+    }
+}
+
+impl From<Ratio> for f64 {
+    fn from(ratio: Ratio) -> Self {
+        let numer = f64::from(ratio.numer);
+        let denom = f64::from(ratio.denom);
+        numer / denom
     }
 }
 
@@ -23,16 +34,19 @@ impl FromStr for Ratio {
     type Err = ParseRatioError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (left, right) = super::parse_two_part_float(s)?;
-        Ok(Ratio { left, right })
+        let (left, right) = super::parse_two(s)?;
+        Ok(Ratio {
+            numer: left,
+            denom: right,
+        })
     }
 }
 
 #[derive(Debug)]
-pub struct ParseRatioError(ParseTwoPartFloatError);
+pub struct ParseRatioError(ParseTwoErr<std::num::ParseIntError>);
 
-impl From<ParseTwoPartFloatError> for ParseRatioError {
-    fn from(e: ParseTwoPartFloatError) -> Self {
+impl From<ParseTwoErr<std::num::ParseIntError>> for ParseRatioError {
+    fn from(e: ParseTwoErr<std::num::ParseIntError>) -> Self {
         ParseRatioError(e)
     }
 }

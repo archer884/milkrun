@@ -1,8 +1,9 @@
+use structopt::StructOpt;
+
 use crate::{
     error::BuildParametersError,
-    param::{Altitude, Orbit, Ratio},
+    param::{Altitude, Body, Orbit, Ratio},
 };
-use structopt::StructOpt;
 
 const KERBIN_RADIUS: f64 = 600_000.0; // meters
 
@@ -21,15 +22,15 @@ impl Command {
 
     pub fn build(&self) -> crate::Result<(Ratio, Orbit)> {
         let Altitude { ap, pe } = self.altitude;
-        let radius = match &self.body {
-            None => KERBIN_RADIUS,
+        let body = match &self.body {
+            None => Body::default(),
             Some(body) => match body.parse() {
-                Ok(radius) => radius,
-                Err(_) => get_body_radius(&body)?,
+                Ok(radius) => Body::new(radius),
+                Err(_) => get_body_radius(body).map(Body::new)?,
             },
         };
 
-        Ok((self.ratio, Orbit::new(ap, pe, self.period, radius)))
+        Ok((self.ratio, body.orbit(ap, pe, self.period)))
     }
 }
 

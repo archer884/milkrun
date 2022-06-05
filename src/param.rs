@@ -1,58 +1,50 @@
+use std::{
+    error::Error,
+    fmt::{self, Debug, Display},
+    str::FromStr,
+};
+
 mod altitude;
 mod orbit;
 mod ratio;
 
 pub use altitude::{Altitude, ParseAltitudeError};
-pub use orbit::Orbit;
+pub use orbit::{Body, Orbit};
 pub use ratio::{ParseRatioError, Ratio};
 
-use std::error::Error;
-use std::fmt::{self, Display};
-use std::num::ParseFloatError;
-
-pub fn parse_two_part_float(s: &str) -> Result<(f64, f64), ParseTwoPartFloatError> {
+pub fn parse_two<T: FromStr>(s: &str) -> Result<(T, T), ParseTwoErr<T::Err>> {
     let mut parts = s.split(|u: char| !u.is_ascii_digit());
 
-    let left = parts
-        .next()
-        .ok_or(ParseTwoPartFloatError::MissingSegment)?
-        .parse()?;
-    let right = parts
-        .next()
-        .ok_or(ParseTwoPartFloatError::MissingSegment)?
-        .parse()?;
+    let left = parts.next().ok_or(ParseTwoErr::MissingSegment)?.parse()?;
+    let right = parts.next().ok_or(ParseTwoErr::MissingSegment)?.parse()?;
 
     match parts.next() {
-        Some(_) => Err(ParseTwoPartFloatError::TooManyParts),
+        Some(_) => Err(ParseTwoErr::TooManyParts),
         None => Ok((left, right)),
     }
 }
 
 #[derive(Debug)]
-pub enum ParseTwoPartFloatError {
-    Float(ParseFloatError),
+pub enum ParseTwoErr<E> {
+    Parse(E),
     MissingSegment,
     TooManyParts,
 }
 
-impl From<ParseFloatError> for ParseTwoPartFloatError {
-    fn from(e: ParseFloatError) -> Self {
-        ParseTwoPartFloatError::Float(e)
+impl<E> From<E> for ParseTwoErr<E> {
+    fn from(e: E) -> Self {
+        ParseTwoErr::Parse(e)
     }
 }
 
-impl Display for ParseTwoPartFloatError {
+impl<E: Display> Display for ParseTwoErr<E> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            ParseTwoPartFloatError::Float(e) => write!(f, "{}", e),
-            ParseTwoPartFloatError::MissingSegment => {
-                f.write_str("invalid format (missing segment)")
-            }
-            ParseTwoPartFloatError::TooManyParts => {
-                f.write_str("invalid format (too many segments)")
-            }
+            ParseTwoErr::Parse(e) => write!(f, "{}", e),
+            ParseTwoErr::MissingSegment => f.write_str("invalid format (missing segment)"),
+            ParseTwoErr::TooManyParts => f.write_str("invalid format (too many segments)"),
         }
     }
 }
 
-impl Error for ParseTwoPartFloatError {}
+impl<E: Debug + Display> Error for ParseTwoErr<E> {}
