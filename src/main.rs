@@ -1,4 +1,12 @@
-// FIXME: Print delta v requirements, if possible? (may require data I'm not getting right now)
+// FIXME: Print Δv requirements, if possible?
+// I believe this will require that the user provide the minor axis for calculation. With that, it
+// will be possible to determine average orbital speed (by calculating the perimiter of the orbit
+// itself and simply dividing perimeter in meters by the period in hours to get meters/hour). What
+// we do with orbital speed, exactly, I'm not sure yet.
+
+// What about having the calculations produce a resonant orbit rather than a resonant Ap/Pe? Then
+// the Δv could be derived by comparing the two orbits, provided that the orbital description(s)
+// are made to contain the necessary information. (I still think I just add the semi-minor axis.)
 
 mod command;
 mod error;
